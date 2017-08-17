@@ -1,22 +1,33 @@
 language: python
 
-python:
-  - 2.7
-  - 3.3
-  - 3.4
-  - 3.5
-  - 3.6
-  - pypy-5.3.1
-
 install:
   - pip install tox
   - pip install tox-travis
 
-script:
-  - tox -- --ro-functional
-
 jobs:
   include:
+    - stage: test
+      python:
+        - 2.7
+        - 3.3
+        - 3.4
+        - 3.5
+        - 3.6
+        - pypy-5.3.1
+      script:
+        - tox -- --ro-functional
+    - stage: test (rw)
+      python:
+        - 2.7
+        - 3.6
+      env:
+        - secure: "smiXQOD/V1+isZeeni5h2E2DMWUmmcmTGFYVQ8j2dY1O937NuwQ0ODa6bNmPaTftWN0VKSdVGXEzuLidG0gpnMxlXzn9hLmby0uMb83VnvkAq/YAJxMFrs2FoHepNlm+eXsbAkMdjZFvlaxkQbpg7RkmRDEZHq7EVXHSWnX2oE21MnF7yUI+rZbtIRU21NGDYcCkwLNA+5jZb15mW7n71QCwznU9FZggNHE+Src1Ockthg7VDnHt+89kleuCiQVnuHzhq7s7FZYMcbH7bBpt6VUD3ZGg/xehXuqCUistRqt5A6mcYso+JMLK377TgWeZ4PO160OPFSxsuNhmND/OJMGBOE2sVbD9lT9LJLY+vJtKjHraAUfm/48pw6ispKIXILPv1W0qSTO6cOM4rnTMjlHLLB09d3gYPqocr0EiEahq5Mg45Cx4lCGWUh9rXPk3Tjdfbnn3YCPu9DDciK03iAI9OsHseu/YPCG8az2Et80kuKaWPgw2WvdzAO1kpkiSDGKcLTXV2QmhsDKZdvraZ9Qf+pEM5174vOHXzCgH8WvSPh5l2U3FHRq5l3Bs0GV6VYy+fkTj4R/UIeuObNaE01H2Lbtw4xrmHezIgzAeUjSx3Ps/AnwXAs3Js/QTt8sB1Oyyo9NHCSB4Uw+8ux5wFo/WBE4BB5cslJjD5OeORG0="
+        - secure: "iT0wZuZk2GN2fFQNF59UcI11u2S+25J2S3sqgtqBCZ3LKwr4HxCaF5xtXd1Om8v+qEcCI7hYnmQEkcIQPJb7jasbT3iTcvfH4Zzy1SH/i79fmhRRL1MOwB3InjEHs8E2POjDFuUg2VyJBuS11lALNuDX+o7+7Ow6NqQG/OjOUrYGf2Dk9t3licx+aACHlUqFRCjkCYD9Nx68wYar6pNi94H0vjua0zjIJ+DkpCJ65EwKtBqj5CWiv2ntQD7/ljXzcz++h5Hw09GdLZrh9tASjznj6xTA/AZSWuTqsI5OFDIWDbvGcqcpPzxzf3H83UFBYzGplBN+P6vCYalQz41GlJ91zmK4B09PjEOXJjKqCI8GPSZx88FyInH+cjwpFwXjX91aRTGtfmmApWG9uQYo4+wYjC9bp/9jGPFArrBi/seIeGWbHBPI3qr8V8d0wUIqBBYtTvOQzbUkfMFgKJvLVGDLTTRBffD5izgbaw6O/tBPiwcobtjK8+LYlVQaYZhdW6zpAEOgdtwXKZMAFDH6b6KnecSkgciQnupKVydShE4+Q2x5E948SKtGZoGNwNltZBsKL2C37TbmI0CqzOouUm8WBZWrEqf+yTX15THgBk/B2c1KcVtUMdQDlOzW8iBD1DeDtFqrhL1ylyCojTJ4CsgoupGrxa4sh7LRnxo8Sj4="
+      install:
+        - pip install -e .
+      script:
+        - bugzilla-cli --bugzilla=partner-bugzilla.redhat.com --username=$BZ_USER --password=$BZ_PASSWORD login
+        - tox -- --rw-functional
     - stage: sonar
       dist: trusty
       language: java
@@ -27,6 +38,7 @@ jobs:
             secure: "fk6YMhht7X5a60QWeeLWOrUu6zjS/1fhVfM7PicaDhkhwOaadzjuKgVj+xAmQL8cMh98hK8wk1aE9uDuwTbKMMydDqY9pH8agtyk3j/2ArbOl1hphYWo3FeoB6q8FTiKN1fiT+8hPy7MIjjFthe3e6dyUR2Le5QtH2B+BCYrDMdqbvN+GXLyBPTAvzbDerpnw1j5o2QWjaLu+juznaR+q/PL58796P6GU2WmpfkpOaMYJA2CA/w0Ehivp4zlbZpmuC/v6NopSjuT6RpO3ppPtTRmlwMZEGTAwXhxlU2CHlIyCq44Rsm0kxf1+xQK2aL/SWJzCDk6rHAd16B10r3AKwYW05Rclw49x9HV29zGeUTJD3qgRscf0v5yYyCISv1r9D4jJ+y9tIVHvMzuMvl6G0rZNiwxu6OwlzpyzQkgPbO183HGCyjYKaBn6jQmCWHzxnk+FRUt7Rvbd53Mz3TYbx7LeTnRDPNc69nIbybjzIRXEw/4SVsncue3whrj4s81NJzkvDaABzLdnd1X9G2aG8h1Vk1XpuUnP7wVyKr1L1wcSdvtIbZ7ekgOA8xQG9XHh4E+5FTZEKOYeb7ZeDKijvUnl1Qo3dXKMS2/Y+18Ogl+4M9w7c3PCjxhDAsuv42uNyxH66qxdzrzckjsyJVS6VTwTBf8fsjzgQ5hmHjKPYA="
           branches:
             - master
+      install: ignore
       script:
         - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then sonar-scanner; fi'
       branches:
@@ -34,6 +46,7 @@ jobs:
           - master
     - stage: deploy
       python: 3.6
+      install: ignore
       script: ignore
       deploy:
         provider: pypi
